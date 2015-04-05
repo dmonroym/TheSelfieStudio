@@ -3,6 +3,7 @@
     package="com.cs371m.theselfiestudio" >
 
 
+    <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
         android:allowBackup="true"
@@ -33,7 +34,5 @@
 
         <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebook_app_id"/>
     </application>
-
-    <uses-permission android:name="android.permission.INTERNET"/>
 
 </manifest>

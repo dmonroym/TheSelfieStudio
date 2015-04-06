@@ -7,21 +7,49 @@
     tools:context="com.cs371m.theselfiestudio.MainActivity">
 
     <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="180dp"
+        android:layout_height="70dp"
         android:text="Camera"
-        android:id="@+id/button"
-        android:layout_marginTop="127dp"
+        android:id="@+id/cameraButton"
+        android:layout_marginTop="131dp"
+        android:background="#99FF33"
+        android:textSize="20dp"
         android:layout_alignParentTop="true"
-        android:layout_alignLeft="@+id/button2"
-        android:layout_alignStart="@+id/button2" />
+        android:layout_centerHorizontal="true" />
 
     <Button
+        android:layout_width="180dp"
+        android:layout_height="70dp"
+        android:text="Gallery"
+        android:id="@+id/galleryButton"
+        android:background="#CCFF33"
+        android:textSize="20dp"
+        android:layout_below="@+id/cameraButton"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="79dp" />
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Gallery"
-        android:id="@+id/button2"
-        android:layout_marginTop="102dp"
-        android:layout_below="@+id/button"
-        android:layout_centerHorizontal="true" />
+        android:text="Log Out"
+        android:id="@+id/logOutButton"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:background="#FF0000"
+        android:layout_toRightOf="@+id/galleryButton"
+        android:layout_toEndOf="@+id/galleryButton" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Hello User"
+        android:id="@+id/greeting"
+        android:layout_marginTop="42dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:textSize="40dp"
+        android:textColor="#000000" />
 </RelativeLayout>

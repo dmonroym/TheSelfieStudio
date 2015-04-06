@@ -1,21 +1,50 @@
 package com.cs371m.theselfiestudio;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
+
+import com.facebook.AccessToken;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookSdk;
+import com.facebook.Profile;
+import com.facebook.login.LoginManager;
 
 
 public class MainActivity extends ActionBarActivity {
+    CallbackManager callbackManager;
+    private TextView greeting;
+    private Profile profile;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        FacebookSdk.sdkInitialize(getApplicationContext());
+        callbackManager = CallbackManager.Factory.create();
         setContentView(R.layout.activity_main);
         setTitle(R.string.app_name);
-        //getActionBar().setIcon(R.drawable.app_icon);
 
+        profile = Profile.getCurrentProfile();
+        greeting = (TextView) findViewById(R.id.greeting);
+        greeting.setText(getString(R.string.hello_user) + " " + profile.getFirstName());
+
+        final Intent intent_logIn = new Intent(this, LoginActivity.class);
+
+        final Button button = (Button) findViewById(R.id.logOutButton);
+        button.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                AccessToken.setCurrentAccessToken(null);
+                startActivity(intent_logIn);
+                finish();
+            }
+        });
     }
 
 

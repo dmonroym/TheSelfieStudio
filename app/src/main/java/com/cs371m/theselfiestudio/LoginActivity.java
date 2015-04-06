@@ -99,7 +99,7 @@ public class LoginActivity extends FragmentActivity {
         if(loggedIn)
         {
             startActivity(intent_main);
-            //finish();
+            finish();
         }
     }
 }

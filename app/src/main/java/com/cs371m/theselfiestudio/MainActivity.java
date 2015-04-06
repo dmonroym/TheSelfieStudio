@@ -34,17 +34,6 @@ public class MainActivity extends ActionBarActivity {
         profile = Profile.getCurrentProfile();
         greeting = (TextView) findViewById(R.id.greeting);
         greeting.setText(getString(R.string.hello_user) + " " + profile.getFirstName());
-
-        final Intent intent_logIn = new Intent(this, LoginActivity.class);
-
-        final Button button = (Button) findViewById(R.id.logOutButton);
-        button.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                AccessToken.setCurrentAccessToken(null);
-                startActivity(intent_logIn);
-                finish();
-            }
-        });
     }
 
 
@@ -62,8 +51,12 @@ public class MainActivity extends ActionBarActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
+        final Intent intent_logIn = new Intent(this, LoginActivity.class);
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_logOut) {
+            AccessToken.setCurrentAccessToken(null);
+            startActivity(intent_logIn);
+            finish();
             return true;
         }
         return super.onOptionsItemSelected(item);

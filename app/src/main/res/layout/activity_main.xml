@@ -28,19 +28,6 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="79dp" />
 
-    <Button
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Log Out"
-        android:id="@+id/logOutButton"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:background="#FF0000"
-        android:layout_toRightOf="@+id/galleryButton"
-        android:layout_toEndOf="@+id/galleryButton" />
-
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

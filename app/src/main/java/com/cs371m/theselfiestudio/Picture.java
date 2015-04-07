@@ -102,7 +102,6 @@ public class Picture extends ActionBarActivity {
         ImageView imageView = (ImageView) findViewById(R.id.imageView);
         if (requestCode == CAMERA_REQUEST && resultCode == RESULT_OK) {
             Log.d("SelfieStudio", fileUri.getPath());
-            Log.d("SelfieStudio", data.getType());
             imageView.setImageBitmap(BitmapFactory.decodeFile(fileUri.getPath()));
         } else {
             //loads the picture user uploaded from the gallery into an image view

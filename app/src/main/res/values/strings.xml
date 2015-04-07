@@ -5,4 +5,9 @@
     <string name="facebook_app_id">879715178754310</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="hello_user">Hello</string>
+    <string name="are_you_sure_bae">Are you sure? This picture is good!</string>
+    <string name="dont_upload_it">Don't upload it</string>
+    <string name="upload_it">Upload it</string>
+    <string name="upload_anyway">Upload anyway</string>
+    <string name="sorry_too_ratchet">Are you sure? This picture isn't very good.</string>
 </resources>

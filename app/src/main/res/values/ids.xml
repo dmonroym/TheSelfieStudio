@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <item name="greeting" type="id">"Greetings"</item>
+    <item name="rating_label" type="id">"ratchet"</item>
 </resources>

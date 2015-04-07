@@ -69,6 +69,21 @@ public class LoginActivity extends FragmentActivity {
 
         final Intent intent_main = new Intent(this, MainActivity.class);
 
+        // Add code to print out the key hash
+        try {
+            PackageInfo info = getPackageManager().getPackageInfo(
+                    "com.cs371m.theselfiestudio",
+                    PackageManager.GET_SIGNATURES);
+            for (Signature signature : info.signatures) {
+                MessageDigest md = MessageDigest.getInstance("SHA");
+                md.update(signature.toByteArray());
+                Log.d("KeyHash:", Base64.encodeToString(md.digest(), Base64.DEFAULT));
+            }
+        } catch (PackageManager.NameNotFoundException e) {
+
+        } catch (NoSuchAlgorithmException e) {
+
+        }
         //uncomment next line in order to skip the facebook login activity
         // startActivity(intent_main);
 

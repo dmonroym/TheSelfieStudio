@@ -123,5 +123,20 @@ public class LoginActivity extends FragmentActivity {
             startActivity(intent_main);
             finish();
         }
+
+        try {
+            PackageInfo info = getPackageManager().getPackageInfo(
+                    "com.cs371m.theselfiestudio",
+                    PackageManager.GET_SIGNATURES);
+            for (Signature signature : info.signatures) {
+                MessageDigest md = MessageDigest.getInstance("SHA");
+                md.update(signature.toByteArray());
+                Log.d("KeyHash:", Base64.encodeToString(md.digest(), Base64.DEFAULT));
+            }
+        } catch (PackageManager.NameNotFoundException e) {
+
+        } catch (NoSuchAlgorithmException e) {
+
+        }
     }
 }

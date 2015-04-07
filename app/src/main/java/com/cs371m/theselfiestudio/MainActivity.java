@@ -1,14 +1,12 @@
 package com.cs371m.theselfiestudio;
 
-import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -18,27 +16,22 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
+
 
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookSdk;
 import com.facebook.Profile;
-import com.facebook.login.LoginManager;
-
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
-import static android.view.View.OnClickListener;
 
 
 public class MainActivity extends ActionBarActivity {
     CallbackManager callbackManager;
     private TextView greeting;
     private Profile profile;
+    int rating = 2;
 
     //final Intent intent_picture = new Intent(this, Picture.class);
     ///used for the camera

@@ -44,6 +44,10 @@
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
 
+        <provider android:authorities="com.facebook.app.FacebookContentProvider879715178754310"
+            android:name="com.facebook.FacebookContentProvider"
+            android:exported="true"/>
+
         <activity
             android:name=".Picture"
             android:label="@string/title_activity_picture" >

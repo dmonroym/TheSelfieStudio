@@ -15,7 +15,8 @@
         android:background="#99FF33"
         android:textSize="20dp"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:onClick="takePicture"/>
 
     <Button
         android:layout_width="180dp"
@@ -26,7 +27,8 @@
         android:textSize="20dp"
         android:layout_below="@+id/cameraButton"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="79dp" />
+        android:layout_marginTop="79dp"
+        android:onClick="uploadPicture"/>
 
     <TextView
         android:layout_width="wrap_content"

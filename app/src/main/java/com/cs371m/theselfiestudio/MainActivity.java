@@ -70,16 +70,18 @@ public class MainActivity extends ActionBarActivity {
                 startActivityForResult(intent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
             }
         });
-
-        Button upload = (Button)findViewById(R.id.galleryButton); //R.id.button is the button that uploads from gallery
-        upload.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                Intent myIntent = new Intent(MainActivity.this, Picture.class);
-                MainActivity.this.startActivity(myIntent);
-            }
-        });
-
     }
+
+    //Method called when Camera button is clicked, opens
+
+    /*Method called when Gallery button is clicked, opens a new Activity called Picture, and allows user to select
+    The photo they want to upload from gallery.
+    */
+    public void uploadPicture(View v){
+        Intent myIntent = new Intent(MainActivity.this, Picture.class);
+        MainActivity.this.startActivity(myIntent);
+    }
+
 
     /** Create a file Uri for saving an image or video */
     private static Uri getOutputMediaFileUri(int type){
@@ -117,60 +119,6 @@ public class MainActivity extends ActionBarActivity {
 
         return mediaFile;
     }
-
-//    @Override
-//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
-//            if (resultCode == RESULT_OK) {
-//                // Image captured and saved to fileUri specified in the Intent
-//                Toast.makeText(this, "Image saved to:\n" +
-//                        data.getData(), Toast.LENGTH_LONG).show();
-//            } else if (resultCode == RESULT_CANCELED) {
-//                // User cancelled the image capture
-//            } else {
-//                // Image capture failed, advise user
-//            }
-//        } else {
-//            if (requestCode == SELECT_PICTURE) {
-//                if (resultCode == RESULT_OK) {
-//                    Uri selectedImage = data.getData();
-//                    String[] filePathColumn = { MediaStore.Images.Media.DATA };
-//
-//                    Cursor cursor = getContentResolver().query(selectedImage,
-//                            filePathColumn, null, null, null);
-//                    cursor.moveToFirst();
-//
-//                    int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-//                    String picturePath = cursor.getString(columnIndex);
-//                    cursor.close();
-//
-//
-//                    ImageView imageView = (ImageView) findViewById(R.id.imageView2);
-//                    imageView.setImageBitmap(BitmapFactory.decodeFile(picturePath));
-//                    Log.d("SelfieStudio", picturePath);
-//                    /*Uri selectedImage = data.getData();
-//                    //String imgFile = selectedImage.getPath();
-//                    Log.d("SelfieStudio", selectedImage.getPath());
-//                    Bitmap bitmap = null;
-//                    try {
-//
-//                        String imgFile = selectedImage.getPath();
-//                        bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImage);
-//                        ImageView myImage = new ImageView(this);
-//                        myImage.setImageBitmap(bitmap);
-//
-//                    } catch (FileNotFoundException e) {
-//                        // TODO Auto-generated catch block
-//                        e.printStackTrace();
-//                    } catch (IOException e) {
-//                        // TODO Auto-generated catch block
-//                        e.printStackTrace();
-//                    }
-//                    Log.d("SelfieStudio", data.getDataString());*/
-//                }
-//            }
-//        }
-//    }
 
     @Override
     public void onResume()

@@ -1,10 +1,7 @@
 package com.cs371m.theselfiestudio;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Environment;
@@ -14,95 +11,117 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Button;
+import android.view.View;
 import android.widget.ImageView;
-import android.widget.Toast;
-
-import com.facebook.share.model.SharePhoto;
-import com.facebook.share.model.SharePhotoContent;
-
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
 
 
 public class Picture extends ActionBarActivity {
 
     ///used for the camera
-    private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 100;
-    private Uri fileUri;
+    private static final int CAMERA_REQUEST = 100;
     public static final int MEDIA_TYPE_IMAGE = 1;
     public static final int SELECT_PICTURE = 2;
-    public int rating;
-
-    public ImageView imageView;
+    private Uri fileUri;
     public String picturePath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_picture);
+        Intent messagePassed = getIntent();
+        String message = messagePassed.getStringExtra(MainActivity.EXTRA_MESSAGE);
 
-        Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        startActivityForResult(Intent.createChooser(intent, "Select Picture"), SELECT_PICTURE);
-
+        if(message.equals("gallery")) {
+            Log.d("SelfieStudio", "uploading picture from gallery... ");
+            Intent upload = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            startActivityForResult(upload, SELECT_PICTURE);
+        }
+        else{
+            Log.d("SelfieStudio", "opening the camera app...");
+            // create Intent to take a picture and return control to the calling application
+            Intent camera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            fileUri = getOutputMediaFileUri(MEDIA_TYPE_IMAGE); // create a file to save the image
+            camera.putExtra(MediaStore.EXTRA_OUTPUT, fileUri); // set the image file name
+            // start the image capture Intent
+            startActivityForResult(camera, CAMERA_REQUEST);
+        }
     }
 
 
+    /**
+     * Create a file Uri for saving an image or video
+     */
+    private static Uri getOutputMediaFileUri(int type) {
+        return Uri.fromFile(getOutputMediaFile(type));
+    }
+
+    /**
+     * Create a File for saving an image or video
+     */
+    private static File getOutputMediaFile(int type) {
+        // To be safe, you should check that the SDCard is mounted
+        Log.d("SelfieStudio", Environment.getExternalStorageState());
+        if(Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+            File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
+                    Environment.DIRECTORY_PICTURES), "SelfieStudio");
+            // This location works best if you want the created images to be shared
+            // between applications and persist after your app has been uninstalled.
+            // Create the storage directory if it does not exist
+            if (!mediaStorageDir.exists()) {
+                if (!mediaStorageDir.mkdirs()) {
+                    Log.d("SelfieStudio", "failed to create directory");
+                    return null;
+                }
+            }
+            // Create a media file name
+            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+            File mediaFile;
+            if (type == MEDIA_TYPE_IMAGE) {
+                mediaFile = new File(mediaStorageDir.getPath() + File.separator +
+                        "IMG_" + timeStamp + ".jpg");
+            } else {
+                Log.d("SelfieStudio", "returns NULL");
+                return null;
+            }
+
+            Log.d("SelfieStudio", mediaFile.getAbsolutePath());
+            return mediaFile;
+        }
+        return null;
+    }
+
+    public void saveToPhone(View v) {
+
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
-            if (resultCode == RESULT_OK) {
-                // Image captured and saved to fileUri specified in the Intent
-                Toast.makeText(this, "Image saved to:\n" +
-                        data.getData(), Toast.LENGTH_LONG).show();
-            } else if (resultCode == RESULT_CANCELED) {
-                // User cancelled the image capture
-            } else {
-                // Image capture failed, advise user
-            }
+        ImageView imageView = (ImageView) findViewById(R.id.imageView);
+        if (requestCode == CAMERA_REQUEST && resultCode == RESULT_OK) {
+            Log.d("SelfieStudio", fileUri.getPath());
+            Log.d("SelfieStudio", data.getType());
+            imageView.setImageBitmap(BitmapFactory.decodeFile(fileUri.getPath()));
         } else {
-            if (requestCode == SELECT_PICTURE) {
-                if (resultCode == RESULT_OK) {
-                    Uri selectedImage = data.getData();
-                    String[] filePathColumn = { MediaStore.Images.Media.DATA };
+            //loads the picture user uploaded from the gallery into an image view
+            if (requestCode == SELECT_PICTURE && resultCode == RESULT_OK) {
+                Uri selectedImage = data.getData();
+                String[] filePathColumn = { MediaStore.Images.Media.DATA };
 
-                    Cursor cursor = getContentResolver().query(selectedImage,
-                            filePathColumn, null, null, null);
-                    cursor.moveToFirst();
+                Cursor cursor = getContentResolver().query(selectedImage,
+                        filePathColumn, null, null, null);
+                cursor.moveToFirst();
 
-                    int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-                    picturePath = cursor.getString(columnIndex);
-                    cursor.close();
+                int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+                picturePath = cursor.getString(columnIndex);
+                cursor.close();
 
+                //this.imageView = (ImageView) findViewById(R.id.imageView);
+                imageView.setImageBitmap(BitmapFactory.decodeFile(picturePath));
 
-                    this.imageView = (ImageView) findViewById(R.id.imageView);
-                    imageView.setImageBitmap(BitmapFactory.decodeFile(picturePath));
-
-                    Log.d("SelfieStudio", picturePath);
-                    /*Uri selectedImage = data.getData();
-                    //String imgFile = selectedImage.getPath();
-                    Log.d("SelfieStudio", selectedImage.getPath());
-                    Bitmap bitmap = null;
-                    try {
-
-                        String imgFile = selectedImage.getPath();
-                        bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImage);
-                        ImageView myImage = new ImageView(this);
-                        myImage.setImageBitmap(bitmap);
-
-                    } catch (FileNotFoundException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
-                    Log.d("SelfieStudio", data.getDataString());*/
-                }
+                Log.d("SelfieStudio", picturePath);
             }
         }
     }

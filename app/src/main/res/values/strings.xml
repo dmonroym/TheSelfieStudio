@@ -11,5 +11,6 @@
     <string name="upload_anyway">Upload anyway</string>
     <string name="sorry_too_ratchet">Are you sure? This picture isn\'t very good.</string>
     <string name="title_activity_picture">Picture</string>
+    <string name="title_activity_camera">Camera</string>
 </resources>
 

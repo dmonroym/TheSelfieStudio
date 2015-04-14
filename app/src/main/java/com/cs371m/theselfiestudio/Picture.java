@@ -1,7 +1,10 @@
 package com.cs371m.theselfiestudio;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Environment;
@@ -12,10 +15,18 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+
+import com.facebook.share.model.SharePhoto;
+import com.facebook.share.model.SharePhotoContent;
+
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
 
 
 public class Picture extends ActionBarActivity {
@@ -26,6 +37,8 @@ public class Picture extends ActionBarActivity {
     public static final int SELECT_PICTURE = 2;
     private Uri fileUri;
     public String picturePath;
+    public int rating = 2;
+    Bitmap newImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,7 +115,8 @@ public class Picture extends ActionBarActivity {
         ImageView imageView = (ImageView) findViewById(R.id.imageView);
         if (requestCode == CAMERA_REQUEST && resultCode == RESULT_OK) {
             Log.d("SelfieStudio", fileUri.getPath());
-            imageView.setImageBitmap(BitmapFactory.decodeFile(fileUri.getPath()));
+            newImage = BitmapFactory.decodeFile(fileUri.getPath());
+            imageView.setImageBitmap(newImage);
         } else {
             //loads the picture user uploaded from the gallery into an image view
             if (requestCode == SELECT_PICTURE && resultCode == RESULT_OK) {
@@ -118,7 +132,8 @@ public class Picture extends ActionBarActivity {
                 cursor.close();
 
                 //this.imageView = (ImageView) findViewById(R.id.imageView);
-                imageView.setImageBitmap(BitmapFactory.decodeFile(picturePath));
+                newImage = BitmapFactory.decodeFile(picturePath);
+                imageView.setImageBitmap(newImage);
 
                 Log.d("SelfieStudio", picturePath);
             }
@@ -148,107 +163,115 @@ public class Picture extends ActionBarActivity {
     }
 
     //Jeremy's code, still need to fix it up
-//    public void assignRating()
-//    {
-//        // Get the buttons and image from the layout file
-//        Button left_btn = (Button) findViewById(R.id.left_button);
-//        Button right_btn = (Button) findViewById(R.id.right_button);
-//        ImageView image = (ImageView) findViewById(R.id.rating_label);
-//
-//        // hashmap for the images we will be using for our rating label
-//        Map<String, Integer> map = new HashMap<String, Integer>();
-//        map.put("ratchet", R.drawable.ratchet);
-//        map.put("basic", R.drawable.basic);
-//        map.put("bae", R.drawable.bae);
-//        map.put("transparent", R.drawable.transparent);
-//
-//        // NOTE: For alpha release, we are simply assigning a random rating to the image
-//        // as our computer vision algorithm won't be completed until our Beta version.
-//        Random r = new Random();
-//        rating =  r.nextInt(4 - 1) + 1;
-//
-//        if (rating == 1) {
-//            // Rating is RATCHET
-//            // For now, we will discourage our users to upload a ratchet selfie by graying out the
-//            // upload button
-//
-//            left_btn.setBackgroundResource(R.drawable.cancel);
-//            right_btn.setBackgroundResource(R.drawable.sharegray);
-//            image.setImageResource(map.get("ratchet"));
-//        } else if (rating == 2) {
-//            // Rating is BASIC
-//            // User is allowed to upload the photo
-//
-//            left_btn.setBackgroundResource(R.drawable.cancel);
-//            right_btn.setBackgroundResource(R.drawable.share);
-//            image.setImageResource(map.get("basic"));
-//        } else {
-//            // Rating is BAE
-//            // We will encourage the user to upload the photo
-//
-//            left_btn.setBackgroundResource(R.drawable.cancel);
-//            right_btn.setBackgroundResource(R.drawable.share);
-//            image.setImageResource(map.get("bae"));
-//        }
-//    }
-//
-//    public void leftButtonClicked()
-//    {
-//        if (rating == 3) {
-//            // Rating is BAE
-//            // We want to ask our user if they are absolutely sure they want to trash such an
-//            // incredible looking picture
-//
-//            new AlertDialog.Builder(this)
-//                    .setTitle("Whoa!")
-//                    .setMessage(R.string.are_you_sure_bae)
-//                    .setPositiveButton(R.string.upload_it, new DialogInterface.OnClickListener() {
-//                        public void onClick(DialogInterface dialog, int id) {
-//                            uploadImageToFacebook(image); // feed this function the bitmap of the image the user just took
-//                        }
-//                    })
-//                    .setNegativeButton(R.string.dont_upload_it, new DialogInterface.OnClickListener() {
-//                        public void onClick(DialogInterface dialog, int id) {
-//                        /* NEED TO GO BACK TO TAKING A NEW PICTURE */
-//                        }
-//                    })
-//                    .setIcon(android.R.drawable.ic_dialog_alert)
-//                    .show();
-//        } else {
-//        /* NEED TO GO BACK TO TAKING A NEW PICTURE */
-//        }
-//    }
-//
-//    public void rightButtonClicked()
-//    {
-//        if (rating == 1) {
-//            // Rating is BAE
-//            // We want to ask our user if they are absolutely sure they want to trash such an
-//            // incredible looking picture
-//
-//            new AlertDialog.Builder(this)
-//                    .setTitle("Whoa!")
-//                    .setMessage(R.string.sorry_too_ratchet)
-//                    .setPositiveButton(R.string.dont_upload_it, new DialogInterface.OnClickListener() {
-//                        public void onClick(DialogInterface dialog, int id) {
-//                            /* NEED TO GO BACK TO TAKING A NEW PICTURE */
-//                        }
-//                    })
-//                    .setNegativeButton(R.string.upload_anyway, new DialogInterface.OnClickListener() {
-//                        public void onClick(DialogInterface dialog, int id) {
-//                            uploadImageToFacebook(image); // feed this function the bitmap of the image the user just took
-//                        }
-//                    })
-//                    .setIcon(android.R.drawable.ic_dialog_alert)
-//                    .show();
-//        } else {
-//            uploadImageToFacebook(image); // feed this function the bitmap of the image the user just took
-//        }
-//    }
-//
-//    public void uploadImageToFacebook(Bitmap image)
-//    {
-//        SharePhoto photo = new SharePhoto.Builder().setBitmap(image).build();
-//        SharePhotoContent content = new SharePhotoContent.Builder().addPhoto(photo).build();
-//    }
+    public void assignRating()
+    {
+        // Get the buttons and image from the layout file
+        ImageButton cancel_btn = (ImageButton) findViewById(R.id.cancel);
+        ImageButton upload_btn = (ImageButton) findViewById(R.id.upload);
+        ImageView image = (ImageView) findViewById(R.id.rating_label);
+
+        // hashmap for the images we will be using for our rating label
+        Map<String, Integer> map = new HashMap<String, Integer>();
+        map.put("ratchet", R.drawable.ratchet);
+        map.put("basic", R.drawable.basic);
+        map.put("bae", R.drawable.bae);
+        map.put("transparent", R.drawable.transparent);
+
+        // NOTE: For now, we are simply assigning a random rating to the image
+        // as our computer vision algorithm won't be completed until our Beta version.
+        Random r = new Random();
+        rating =  r.nextInt(4 - 1) + 1;
+
+        if (rating == 1) {
+            // Rating is RATCHET
+            // For now, we will discourage our users to upload a ratchet selfie by graying out the
+            // upload button
+
+            // cancel_btn.setBackgroundResource(R.drawable.cancel);
+            upload_btn.setBackgroundResource(R.drawable.sharegray);
+            image.setImageResource(map.get("ratchet"));
+        } else if (rating == 2) {
+            // Rating is BASIC
+            // User is allowed to upload the photo
+
+            // cancel_btn.setBackgroundResource(R.drawable.cancel);
+            upload_btn.setBackgroundResource(R.drawable.share);
+            image.setImageResource(map.get("basic"));
+        } else {
+            // Rating is BAE
+            // We will encourage the user to upload the photo
+
+            // cancel_btn.setBackgroundResource(R.drawable.cancel);
+            upload_btn.setBackgroundResource(R.drawable.share);
+            image.setImageResource(map.get("bae"));
+        }
+    }
+
+    public void leftButtonClicked()
+    {
+        if (rating == 3) {
+            // Rating is BAE
+            // We want to ask our user if they are absolutely sure they want to trash such an
+            // incredible looking picture
+
+            new AlertDialog.Builder(this)
+                    .setTitle("Whoa!")
+                    .setMessage(R.string.are_you_sure_bae)
+                    .setPositiveButton(R.string.upload_it, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            if(newImage != null) {
+                                uploadImageToFacebook(newImage);
+                            } else {
+                                /* NEED TO GO BACK TO TAKING A NEW PICTURE */
+                            }
+                        }
+                    })
+                    .setNegativeButton(R.string.dont_upload_it, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                        /* NEED TO GO BACK TO TAKING A NEW PICTURE */
+                        }
+                    })
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .show();
+        } else {
+        /* NEED TO GO BACK TO TAKING A NEW PICTURE */
+        }
+    }
+
+    public void rightButtonClicked()
+    {
+        if (rating == 1) {
+            // Rating is BAE
+            // We want to ask our user if they are absolutely sure they want to trash such an
+            // incredible looking picture
+
+            new AlertDialog.Builder(this)
+                    .setTitle("Whoa!")
+                    .setMessage(R.string.sorry_too_ratchet)
+                    .setPositiveButton(R.string.dont_upload_it, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            /* NEED TO GO BACK TO TAKING A NEW PICTURE */
+                        }
+                    })
+                    .setNegativeButton(R.string.upload_anyway, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            if (newImage != null) {
+                                uploadImageToFacebook(newImage); // feed this function the bitmap of the image the user just took
+                            } else {
+                                /* NEED TO GO BACK TO TAKING A NEW PICTURE */
+                            }
+                        }
+                    })
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .show();
+        } else {
+            uploadImageToFacebook(newImage); // feed this function the bitmap of the image the user just took
+        }
+    }
+
+    public void uploadImageToFacebook(Bitmap image)
+    {
+        SharePhoto photo = new SharePhoto.Builder().setBitmap(image).build();
+        SharePhotoContent content = new SharePhotoContent.Builder().addPhoto(photo).build();
+    }
 }

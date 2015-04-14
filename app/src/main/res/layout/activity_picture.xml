@@ -12,13 +12,28 @@
         android:id="@+id/imageView"
         android:layout_centerHorizontal="true" />
 
-    <Button
+    <ImageButton
+        android:id="@+id/cancel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Save!"
-        android:id="@+id/button"
+        android:src="@drawable/cancel"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:onClick="saveToPhone"/>
+        android:background="@null"
+        android:layout_alignParentLeft="true"
+        android:scaleType="fitCenter"
+        android:padding="20dip"
+        android:onClick="leftButtonClicked" />
+
+    <ImageButton
+        android:id="@+id/upload"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/share"
+        android:layout_alignParentBottom="true"
+        android:background="@null"
+        android:layout_alignParentRight="true"
+        android:scaleType="fitCenter"
+        android:padding="20dip"
+        android:onClick="rightButtonClicked" />
 
 </RelativeLayout>

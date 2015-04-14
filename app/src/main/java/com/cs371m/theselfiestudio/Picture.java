@@ -3,26 +3,24 @@ package com.cs371m.theselfiestudio;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageInstaller;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.ActionBarActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.Toast;
 
-import com.facebook.login.LoginClient;
 import com.facebook.share.model.SharePhoto;
 import com.facebook.share.model.SharePhotoContent;
+import com.facebook.share.widget.ShareDialog;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -276,7 +274,10 @@ public class Picture extends ActionBarActivity {
 
     public void uploadImageToFacebook(Bitmap image)
     {
-        // SharePhoto photo = new SharePhoto.Builder().setBitmap(image).build();
-        // SharePhotoContent content = new SharePhotoContent.Builder().addPhoto(photo).build();
+        if (ShareDialog.canShow(SharePhotoContent.class)) {
+            SharePhoto photo = new SharePhoto.Builder().setBitmap(image).build();
+            SharePhotoContent content = new SharePhotoContent.Builder().addPhoto(photo).build();
+            ShareDialog.show(Picture.this, content);
+        }
     }
 }

@@ -3,6 +3,7 @@
     <string name="hello_world">Hello worlds!</string>
     <string name="action_settings">Log Out</string>
     <string name="facebook_app_id">879715178754310</string>
+    <string name="app_id">879715178754310</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="hello_user">Hello</string>
     <string name="are_you_sure_bae">Are you sure? This picture is good!</string>

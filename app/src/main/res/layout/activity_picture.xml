@@ -36,4 +36,5 @@
         android:padding="20dip"
         android:onClick="rightButtonClicked" />
 
+
 </RelativeLayout>

@@ -51,6 +51,7 @@ public class Picture extends ActionBarActivity {
             Log.d("SelfieStudio", "uploading picture from gallery... ");
             Intent upload = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
             startActivityForResult(upload, SELECT_PICTURE);
+            Log.d("SelfieStudio", "activity starting");
         }
         else{
             Log.d("SelfieStudio", "opening the camera app...");
@@ -106,8 +107,8 @@ public class Picture extends ActionBarActivity {
         return null;
     }
 
-    public void saveToPhone(View v) {
-
+    public void uploadPicture(View v) {
+        Log.d("SelfieStudio", "User wants to upload photo");
     }
 
     @Override
@@ -117,26 +118,30 @@ public class Picture extends ActionBarActivity {
             Log.d("SelfieStudio", fileUri.getPath());
             newImage = BitmapFactory.decodeFile(fileUri.getPath());
             imageView.setImageBitmap(newImage);
-        } else {
+            Log.d("SelfieStudio", "activity result: getting picture from camera");
+        } else if(requestCode == SELECT_PICTURE && resultCode == RESULT_OK) {
+            Log.d("SelfieStudio", "activity result: uploading picture from gallery");
             //loads the picture user uploaded from the gallery into an image view
-            if (requestCode == SELECT_PICTURE && resultCode == RESULT_OK) {
-                Uri selectedImage = data.getData();
-                String[] filePathColumn = { MediaStore.Images.Media.DATA };
+            Uri selectedImage = data.getData();
+            String[] filePathColumn = { MediaStore.Images.Media.DATA };
 
-                Cursor cursor = getContentResolver().query(selectedImage,
-                        filePathColumn, null, null, null);
-                cursor.moveToFirst();
+            Cursor cursor = getContentResolver().query(selectedImage,
+                    filePathColumn, null, null, null);
+            cursor.moveToFirst();
 
-                int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-                picturePath = cursor.getString(columnIndex);
-                cursor.close();
+            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+            picturePath = cursor.getString(columnIndex);
+            cursor.close();
 
-                //this.imageView = (ImageView) findViewById(R.id.imageView);
-                newImage = BitmapFactory.decodeFile(picturePath);
-                imageView.setImageBitmap(newImage);
+            //this.imageView = (ImageView) findViewById(R.id.imageView);
+            newImage = BitmapFactory.decodeFile(picturePath);
+            imageView.setImageBitmap(newImage);
 
-                Log.d("SelfieStudio", picturePath);
-            }
+            Log.d("SelfieStudio", picturePath);
+
+        } else {
+            Log.d("SelfieStudio", "activity result: else");
+            finish();
         }
     }
 

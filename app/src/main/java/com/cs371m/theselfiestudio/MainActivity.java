@@ -58,7 +58,7 @@ public class MainActivity extends ActionBarActivity {
         super.onResume();
         profile = Profile.getCurrentProfile();
         greeting = (TextView) findViewById(R.id.greeting);
-        greeting.setText(getString(R.string.hello_user) + " " + profile.getFirstName());
+        //greeting.setText(getString(R.string.hello_user) + " " + profile.getFirstName());
     }
 
     @Override

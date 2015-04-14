@@ -22,7 +22,7 @@
         android:layout_alignParentLeft="true"
         android:scaleType="fitCenter"
         android:padding="20dip"
-        android:onClick="leftButtonClicked" />
+        android:onClick="cancelButtonClicked" />
 
     <ImageButton
         android:id="@+id/upload"
@@ -34,7 +34,7 @@
         android:layout_alignParentRight="true"
         android:scaleType="fitCenter"
         android:padding="20dip"
-        android:onClick="rightButtonClicked" />
+        android:onClick="uploadButtonClicked" />
 
 
 </RelativeLayout>

@@ -3,6 +3,7 @@ package com.cs371m.theselfiestudio;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageInstaller;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -17,7 +18,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.Toast;
 
+import com.facebook.login.LoginClient;
 import com.facebook.share.model.SharePhoto;
 import com.facebook.share.model.SharePhotoContent;
 
@@ -173,7 +176,7 @@ public class Picture extends ActionBarActivity {
         // Get the buttons and image from the layout file
         ImageButton cancel_btn = (ImageButton) findViewById(R.id.cancel);
         ImageButton upload_btn = (ImageButton) findViewById(R.id.upload);
-        ImageView image = (ImageView) findViewById(R.id.rating_label);
+        // ImageView image = (ImageView) findViewById(R.id.rating_label);
 
         // hashmap for the images we will be using for our rating label
         Map<String, Integer> map = new HashMap<String, Integer>();
@@ -193,27 +196,24 @@ public class Picture extends ActionBarActivity {
             // upload button
 
             // cancel_btn.setBackgroundResource(R.drawable.cancel);
-            upload_btn.setBackgroundResource(R.drawable.sharegray);
-            image.setImageResource(map.get("ratchet"));
+            upload_btn.setImageResource(R.drawable.sharegray);
+            //image.setImageResource(map.get("ratchet"));
         } else if (rating == 2) {
             // Rating is BASIC
             // User is allowed to upload the photo
 
-            // cancel_btn.setBackgroundResource(R.drawable.cancel);
-            upload_btn.setBackgroundResource(R.drawable.share);
-            image.setImageResource(map.get("basic"));
+            //image.setImageResource(map.get("basic"));
         } else {
             // Rating is BAE
             // We will encourage the user to upload the photo
 
-            // cancel_btn.setBackgroundResource(R.drawable.cancel);
-            upload_btn.setBackgroundResource(R.drawable.share);
-            image.setImageResource(map.get("bae"));
+            //image.setImageResource(map.get("bae"));
         }
     }
 
-    public void leftButtonClicked()
+    public void cancelButtonClicked(View v)
     {
+        assignRating();
         if (rating == 3) {
             // Rating is BAE
             // We want to ask our user if they are absolutely sure they want to trash such an
@@ -227,25 +227,25 @@ public class Picture extends ActionBarActivity {
                             if(newImage != null) {
                                 uploadImageToFacebook(newImage);
                             } else {
-                                /* NEED TO GO BACK TO TAKING A NEW PICTURE */
+                                finish();
                             }
                         }
                     })
                     .setNegativeButton(R.string.dont_upload_it, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
-                        /* NEED TO GO BACK TO TAKING A NEW PICTURE */
+                            finish();
                         }
                     })
                     .setIcon(android.R.drawable.ic_dialog_alert)
                     .show();
         } else {
-        /* NEED TO GO BACK TO TAKING A NEW PICTURE */
+            finish();
         }
     }
 
-    public void rightButtonClicked()
+    public void uploadButtonClicked(View v)
     {
-        if (rating == 1) {
+        if (rating > 0) {
             // Rating is BAE
             // We want to ask our user if they are absolutely sure they want to trash such an
             // incredible looking picture
@@ -255,7 +255,7 @@ public class Picture extends ActionBarActivity {
                     .setMessage(R.string.sorry_too_ratchet)
                     .setPositiveButton(R.string.dont_upload_it, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
-                            /* NEED TO GO BACK TO TAKING A NEW PICTURE */
+                            finish();
                         }
                     })
                     .setNegativeButton(R.string.upload_anyway, new DialogInterface.OnClickListener() {
@@ -263,7 +263,7 @@ public class Picture extends ActionBarActivity {
                             if (newImage != null) {
                                 uploadImageToFacebook(newImage); // feed this function the bitmap of the image the user just took
                             } else {
-                                /* NEED TO GO BACK TO TAKING A NEW PICTURE */
+                                finish();
                             }
                         }
                     })
@@ -276,7 +276,7 @@ public class Picture extends ActionBarActivity {
 
     public void uploadImageToFacebook(Bitmap image)
     {
-        SharePhoto photo = new SharePhoto.Builder().setBitmap(image).build();
-        SharePhotoContent content = new SharePhotoContent.Builder().addPhoto(photo).build();
+        // SharePhoto photo = new SharePhoto.Builder().setBitmap(image).build();
+        // SharePhotoContent content = new SharePhotoContent.Builder().addPhoto(photo).build();
     }
 }

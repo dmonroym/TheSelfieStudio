@@ -85,7 +85,7 @@ public class LoginActivity extends FragmentActivity {
 
         }
         //uncomment next line in order to skip the facebook login activity
-        // startActivity(intent_main);
+        //startActivity(intent_main);
 
         LoginManager.getInstance().registerCallback(callbackManager,
                 new FacebookCallback<LoginResult>() {

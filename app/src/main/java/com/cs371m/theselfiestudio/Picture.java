@@ -58,6 +58,7 @@ public class Picture extends ActionBarActivity {
             Log.d("SelfieStudio", "opening the camera app...");
             // create Intent to take a picture and return control to the calling application
             Intent camera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            camera.putExtra("android.intent.extras.CAMERA_FACING", 1);
             fileUri = getOutputMediaFileUri(MEDIA_TYPE_IMAGE); // create a file to save the image
             camera.putExtra(MediaStore.EXTRA_OUTPUT, fileUri); // set the image file name
             // start the image capture Intent

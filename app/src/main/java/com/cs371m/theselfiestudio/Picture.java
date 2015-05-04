@@ -190,12 +190,16 @@ public class Picture extends ActionBarActivity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
+        Log.d("SelfieStudio", "on options item ");
+        final Intent intent_logIn = new Intent(this, LoginActivity.class);
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_logOutPicture) {
+            Log.d("SelfieStudio", "logout selected ");
+            AccessToken.setCurrentAccessToken(null);
+            startActivity(intent_logIn);
+            finish();
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 

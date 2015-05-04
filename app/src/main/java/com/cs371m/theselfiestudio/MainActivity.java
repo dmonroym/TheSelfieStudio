@@ -31,7 +31,6 @@ public class MainActivity extends ActionBarActivity {
         callbackManager = CallbackManager.Factory.create();
         setContentView(R.layout.activity_main);
         setTitle(R.string.app_name);
-        profile = Profile.getCurrentProfile();
     }
 
     /*Method called when Camera button is clicked, opens a new Activity called Picture, and allows user to
@@ -58,8 +57,16 @@ public class MainActivity extends ActionBarActivity {
     public void onResume() {
         super.onResume();
         profile = Profile.getCurrentProfile();
-        //greeting = (TextView) findViewById(R.id.greeting);
-        //greeting.setText(getString(R.string.hello_user) + " " + profile.getFirstName());
+        greeting = (TextView) findViewById(R.id.greeting);
+        if(profile != null)
+        {
+            greeting.setText(getString(R.string.hello_user) + " " + profile.getFirstName());
+        }
+        else
+        {
+            greeting.setText(getString(R.string.hello_user));
+        }
+
     }
 
     @Override

@@ -1,14 +1,17 @@
 package com.cs371m.theselfiestudio;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.util.AttributeSet;
 import android.util.Base64;
 import android.util.Log;
+import android.view.View;
 
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
@@ -18,9 +21,12 @@ import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
+import com.facebook.login.widget.LoginButton;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
+import java.util.Collection;
 
 public class LoginActivity extends FragmentActivity {
 
@@ -87,6 +93,15 @@ public class LoginActivity extends FragmentActivity {
         //uncomment next line in order to skip the facebook login activity
         //startActivity(intent_main);
 
+        setContentView(R.layout.activity_login);
+
+//        LoginButton loginButton = (LoginButton) this.findViewById(R.id.login_button);
+//        loginButton.setReadPermissions("user_photos");
+
+
+//        LoginManager.getInstance().logInWithReadPermissions(
+//                this,
+//                Arrays.asList("user_photos"));
         LoginManager.getInstance().registerCallback(callbackManager,
                 new FacebookCallback<LoginResult>() {
                     @Override
@@ -114,8 +129,6 @@ public class LoginActivity extends FragmentActivity {
                     }
                 });
 
-        setContentView(R.layout.activity_login);
-
         //determine if the user has already logged in
         boolean loggedIn = AccessToken.getCurrentAccessToken() != null;
         if(loggedIn)
@@ -139,4 +152,13 @@ public class LoginActivity extends FragmentActivity {
 
         }
     }
+
+//    @Override
+//    public View onCreateView(String name, Context context, AttributeSet attrs)
+//    {
+//        LoginButton authButton = (LoginButton)this.findViewById(R.id.login_button);
+//        authButton.setReadPermissions(Arrays.asList("user_photos"));
+//
+//        return super.onCreateView(name, context, attrs);
+//    }
 }

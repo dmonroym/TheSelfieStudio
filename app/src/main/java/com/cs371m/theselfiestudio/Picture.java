@@ -312,7 +312,7 @@ public class Picture extends ActionBarActivity {
                         }
                     }
 
-                    @Override
+
                     public void onPostExecute(JSONObject jsonData) {
                         Log.d("Selfie Studio", "POST EXECUTE");
                         if (rating == RATCHET) {

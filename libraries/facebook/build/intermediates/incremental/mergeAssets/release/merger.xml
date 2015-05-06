@@ -1,2 +1,2 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merger version="3"><dataSet config="main"><source path="/Users/laurenmckenna/Documents/workspace/Android/TheSelfieStudio/libraries/facebook/src/main/assets"/></dataSet><dataSet config="release"><source path="/Users/laurenmckenna/Documents/workspace/Android/TheSelfieStudio/libraries/facebook/src/release/assets"/></dataSet></merger>
+<merger version="3"><dataSet config="main"><source path="C:\Users\Daniel\Documents\Fall 2015\CS 371M\TheSelfieStudio\libraries\facebook\src\main\assets"/></dataSet><dataSet config="release"><source path="C:\Users\Daniel\Documents\Fall 2015\CS 371M\TheSelfieStudio\libraries\facebook\src\release\assets"/></dataSet></merger>

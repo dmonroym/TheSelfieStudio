@@ -57,6 +57,9 @@ public class Picture extends ActionBarActivity {
     public static final int BASIC = 2;
     public static final int RATCHET = 1;
 
+    public static boolean imageLoaded = false;
+    public static int imageLoadedCounter = 0;
+
     private SoundPool mSounds;
     private HashMap<Integer, Integer> mSoundIDMap;
     private boolean mSoundOn;
@@ -73,7 +76,6 @@ public class Picture extends ActionBarActivity {
     public Map<String, Integer> map;
     public ArrayList<String> imageUrls;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,6 +85,11 @@ public class Picture extends ActionBarActivity {
         String message = messagePassed.getStringExtra(MainActivity.EXTRA_MESSAGE);
         imageUrls = new ArrayList<String>();
 
+        String permissions = AccessToken.getCurrentAccessToken().getPermissions().toString();
+        Log.d("Selfie Studio", "***** PERMISSIONS: " + permissions);
+
+        imageLoaded = false;
+        imageLoadedCounter = 0;
         if(message.equals("gallery")) {
             Log.d("SelfieStudio", "uploading picture from gallery... ");
             Intent upload = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
@@ -149,14 +156,20 @@ public class Picture extends ActionBarActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        ImageView imageView = (ImageView) findViewById(R.id.imageView);
+        ImageView imageView = null;
+
         if (requestCode == CAMERA_REQUEST && resultCode == RESULT_OK) {
+            imageLoadedCounter++;
+            imageView = (ImageView) findViewById(R.id.imageView);
             Log.d("SelfieStudio", fileUri.getPath());
             newImage = BitmapFactory.decodeFile(fileUri.getPath());
             imageView.setImageBitmap(newImage);
             assignRating();
             Log.d("SelfieStudio", "activity result: getting picture from camera");
+            imageLoaded = true;
         } else if(requestCode == SELECT_PICTURE && resultCode == RESULT_OK) {
+            imageLoadedCounter++;
+            imageView = (ImageView) findViewById(R.id.imageView);
             Log.d("SelfieStudio", "activity result: uploading picture from gallery");
             //loads the picture user uploaded from the gallery into an image view
             Uri selectedImage = data.getData();
@@ -176,10 +189,15 @@ public class Picture extends ActionBarActivity {
             assignRating();
 
             Log.d("SelfieStudio", picturePath);
+            imageLoaded = true;
 
         } else {
             Log.d("SelfieStudio", "activity result: else");
-            //finish();
+            if(!imageLoaded || imageLoadedCounter < 1)
+            {
+                finish();
+            }
+
         }
     }
 
@@ -282,7 +300,7 @@ public class Picture extends ActionBarActivity {
                         }
                     }
 
-                    @Override
+
                     public void onPostExecute(JSONObject jsonData) {
                         Log.d("Selfie Studio", "POST EXECUTE");
                         if (rating == RATCHET) {

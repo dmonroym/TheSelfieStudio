@@ -11,6 +11,7 @@ import android.graphics.Color;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -25,8 +26,6 @@ import android.widget.ImageView;
 import com.facebook.AccessToken;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
-import com.facebook.HttpMethod;
-import com.facebook.login.LoginManager;
 import com.facebook.share.model.SharePhoto;
 import com.facebook.share.model.SharePhotoContent;
 import com.facebook.share.widget.ShareDialog;
@@ -38,19 +37,13 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Array;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Random;
-import java.util.Set;
 
 
 public class Picture extends ActionBarActivity {
@@ -74,7 +67,6 @@ public class Picture extends ActionBarActivity {
     public String picturePath;
     public int rating = 2;
     Bitmap newImage;
-    private static final int baseSize = 300;
     public ImageButton cancel_btn;
     public ImageButton upload_btn;
     public ImageView ratingLabel;
@@ -90,9 +82,6 @@ public class Picture extends ActionBarActivity {
         Intent messagePassed = getIntent();
         String message = messagePassed.getStringExtra(MainActivity.EXTRA_MESSAGE);
         imageUrls = new ArrayList<String>();
-
-        String permissions = AccessToken.getCurrentAccessToken().getPermissions().toString();
-        Log.d("Selfie Studio", "***** PERMISSIONS: " + permissions);
 
         if(message.equals("gallery")) {
             Log.d("SelfieStudio", "uploading picture from gallery... ");
@@ -255,9 +244,7 @@ public class Picture extends ActionBarActivity {
         map.put("bae", R.drawable.bae);
         map.put("transparent", R.drawable.transparent);
 
-//        LoginManager.getInstance().logInWithReadPermissions(
-//                this,
-//                Arrays.asList("user_photos"));
+        final ArrayList<ImageFromFacebook> currentDataSet = new ArrayList<ImageFromFacebook>();
 
         GraphRequest request = GraphRequest.newMeRequest(
                 AccessToken.getCurrentAccessToken(),
@@ -269,27 +256,25 @@ public class Picture extends ActionBarActivity {
                         if (object == null) {
                             Log.d("Selfie Studio", "response is null");
                         } else {
-                            // get the signature vector for our original image
-                            int[][] signatureVector = calcSignatureVector(newImage);
-
-                            ArrayList<ImageFromFacebook> currentDataSet = new ArrayList<ImageFromFacebook>();
-                            //ArrayList<ImageFromFacebook> currentDataSet = tempGetImages();
-
                             try {
-                                Log.d("Selfie Studio", "trying to get photos");
+                                Log.d("Selfie Studio", "getting JSON from Facebook");
                                 JSONArray data = object.getJSONObject("photos").getJSONArray("data");
-                                Log.d("Selfie Studio", "LENGTH: " + data.length());
+                                ArrayList<String> image_urls = new ArrayList<String>();
+                                ArrayList<Integer> like_counts = new ArrayList<Integer>();
                                 for (int i = 0; i < data.length(); i++) {
                                     JSONObject objAtIndexI = data.getJSONObject(i);
                                     JSONArray images = objAtIndexI.getJSONArray("images");
                                     JSONArray likes = objAtIndexI.getJSONObject("likes").getJSONArray("data");
-                                    //Log.d("Selfie Studio", "NUM LIKES: " +likes.length());
+                                    Integer numLikes = likes.length();
+                                    //Log.d("Selfie Studio", "NUM LIKES: " + numLikes));
                                     JSONObject medRes = images.getJSONObject(images.length() / 2);
-                                    String imageUrl = medRes.getString("source");
+                                    String imageUrlStr = medRes.getString("source");
                                     //Log.d("Selfie Studio", "IMAGE URL: " + imageUrl);
-
-                                    imageUrls.add(imageUrl);
+                                    image_urls.add(imageUrlStr);
+                                    like_counts.add(numLikes);
                                 }
+                                new DownloadImageTask(image_urls, like_counts).execute();
+                                Log.d("Selfie Studio", "***** HERE *****");
                             } catch (JSONException e) {
                                 Log.d("Selfie Studio", "fail");
                                 e.printStackTrace();
@@ -433,6 +418,7 @@ public class Picture extends ActionBarActivity {
         int sampleSize = 15;
         int numPixels = 0;
         double[] accum = new double[3];
+        int baseSize = (int) (image.getWidth() * 0.025f);
 
         // As we loop through the block of pixels surrounding our originally chosen pixel,
         // add the RGB values to our accum vector to be averaged later on
@@ -440,6 +426,8 @@ public class Picture extends ActionBarActivity {
         {
             for (double y = py * baseSize - sampleSize; y < py * baseSize + sampleSize; y++)
             {
+                x = Math.abs(x);
+                y = Math.abs(y);
                 int thisPixel = image.getPixel((int) x, (int) y);
                 accum[0] += Color.red(thisPixel);
                 accum[1] += Color.green(thisPixel);
@@ -455,101 +443,6 @@ public class Picture extends ActionBarActivity {
 
         return Color.rgb((int) accum[0], (int) accum[1], (int) accum[2]);
     }
-
-    //public ArrayList<ImageFromFacebook> tempGetImages()
-    public ImageFromFacebook[] tempGetImages()
-    {
-        Log.d("SelfieStudio", "***** HERE *****");
-        /*ArrayList<ImageFromFacebook> temp = new ArrayList<>();
-        temp.add(new ImageFromFacebook(BitmapFactory.decodeResource(this.getResources(), R.drawable.a), 53, "a"));
-        temp.add(new ImageFromFacebook(BitmapFactory.decodeResource(this.getResources(), R.drawable.b), 78, "b"));
-                temp.add(new ImageFromFacebook(BitmapFactory.decodeResource(this.getResources(), R.drawable.c), 20, "c"));
-                temp.add(new ImageFromFacebook(BitmapFactory.decodeResource(this.getResources(), R.drawable.d), 46, "d"));
-                temp.add(new ImageFromFacebook(BitmapFactory.decodeResource(this.getResources(), R.drawable.e), 66, "e"));
-                temp.add(new ImageFromFacebook(BitmapFactory.decodeResource(this.getResources(), R.drawable.f), 54, "f"));
-                temp.add(new ImageFromFacebook(BitmapFactory.decodeResource(this.getResources(), R.drawable.g), 18, "g"));
-                temp.add(new ImageFromFacebook(BitmapFactory.decodeResource(this.getResources(), R.drawable.h), 57, "h"));
-                temp.add(new ImageFromFacebook(BitmapFactory.decodeResource(this.getResources(), R.drawable.i), 20, "i"));
-                temp.add(new ImageFromFacebook(BitmapFactory.decodeResource(this.getResources(), R.drawable.j), 77, "j"));
-                temp.add( new ImageFromFacebook(BitmapFactory.decodeResource(this.getResources(), R.drawable.k), 69, "k"));
-                temp.add(new ImageFromFacebook(BitmapFactory.decodeResource(this.getResources(), R.drawable.l), 41, "l"));
-                temp.add(new ImageFromFacebook(BitmapFactory.decodeResource(this.getResources(), R.drawable.m), 7, "m"));
-                temp.add(new ImageFromFacebook(BitmapFactory.decodeResource(this.getResources(), R.drawable.n), 30, "n"));
-                temp.add(new ImageFromFacebook(BitmapFactory.decodeResource(this.getResources(), R.drawable.o), 27, "o"));
-        return temp;*/
-        return  new ImageFromFacebook[]{
-                new ImageFromFacebook(BitmapFactory.decodeResource(this.getResources(), R.drawable.a), 53, "a"),
-                new ImageFromFacebook(BitmapFactory.decodeResource(this.getResources(), R.drawable.b), 78, "b"),
-                new ImageFromFacebook(BitmapFactory.decodeResource(this.getResources(), R.drawable.c), 20, "c"),
-                new ImageFromFacebook(BitmapFactory.decodeResource(this.getResources(), R.drawable.d), 46, "d"),
-                new ImageFromFacebook(BitmapFactory.decodeResource(this.getResources(), R.drawable.e), 66, "e"),
-                new ImageFromFacebook(BitmapFactory.decodeResource(this.getResources(), R.drawable.f), 54, "f"),
-                new ImageFromFacebook(BitmapFactory.decodeResource(this.getResources(), R.drawable.g), 18, "g"),
-                new ImageFromFacebook(BitmapFactory.decodeResource(this.getResources(), R.drawable.h), 57, "h"),
-                new ImageFromFacebook(BitmapFactory.decodeResource(this.getResources(), R.drawable.i), 20, "i"),
-                new ImageFromFacebook(BitmapFactory.decodeResource(this.getResources(), R.drawable.j), 77, "j"),
-                new ImageFromFacebook(BitmapFactory.decodeResource(this.getResources(), R.drawable.k), 69, "k"),
-                new ImageFromFacebook(BitmapFactory.decodeResource(this.getResources(), R.drawable.l), 41, "l"),
-                new ImageFromFacebook(BitmapFactory.decodeResource(this.getResources(), R.drawable.m), 7, "m"),
-                new ImageFromFacebook(BitmapFactory.decodeResource(this.getResources(), R.drawable.n), 30, "n"),
-                new ImageFromFacebook(BitmapFactory.decodeResource(this.getResources(), R.drawable.o), 27, "o")
-        };
-    }
-
-//    public ImageFromFacebook[] getUserImages() {
-//        AccessToken myToken = AccessToken.getCurrentAccessToken();
-//
-//        // I have no idea what is happening with this block
-//        // App pops up the permissions dialog for like half a second
-//        // and then it disappears before I can grant permission to share my images
-//        LoginManager.getInstance().logInWithReadPermissions(
-//                this,
-//                Arrays.asList("user_photos"));
-//
-//        GraphRequest request = GraphRequest.newMeRequest(
-//                myToken,
-//                new GraphRequest.GraphJSONObjectCallback() {
-//                    @Override
-//                    public void onCompleted(
-//                            JSONObject object,
-//                            GraphResponse response) {
-//                        if (object == null) {
-//                            Log.d("Selfie Studio", "response is null");
-//                        } else {
-//                            Log.d("Selfie Studio", object.toString());
-//                        }
-//                    }
-//                });
-//        Bundle parameters = new Bundle();
-//        parameters.putString("fields", "photos{images,likes}");
-//        parameters.putString("limit", "10");
-//        request.setParameters(parameters);
-//        request.executeAsync();
-//
-//        return null;
-//    }
-
-//        AccessToken myToken = AccessToken.getCurrentAccessToken();
-//        Bundle parameters = new Bundle();
-//        parameters.putString("fields", "images,likes");
-//        parameters.putString("limit", "10");
-//        GraphRequest request = new GraphRequest(
-//                myToken,
-//                "me/photos",
-//                parameters,
-//                HttpMethod.GET,
-//                new Callback() {
-//                    @Override
-//                    public void onCompleted(
-//                            JSONObject object,
-//                            GraphResponse response) {
-//                        // Application code
-//                    }
-//                },
-//                "2.3");
-//        request.executeAsync();
-//
-//        return null;
 
     /* Simple function for calculating the distance between our two vectors
      * Fails if the vectors are not of the same length (which should never happen due to the
@@ -581,4 +474,126 @@ public class Picture extends ActionBarActivity {
 
         return dist;
     }
+
+    class DownloadImageTask extends AsyncTask<String, Void, ArrayList<Bitmap>> {
+
+        ArrayList<Integer> likeCounts;
+        ArrayList<String> urls;
+
+        public DownloadImageTask(ArrayList<String> imgUrls, ArrayList<Integer> likeCounts) {
+            this.likeCounts = likeCounts;
+            this.urls = imgUrls;
+        }
+
+        protected ArrayList<Bitmap> doInBackground(String... strings) {
+            Log.d("Selfie Studio", "IN THE ASYNC TASK");
+            int count = urls.size();
+            ArrayList<Bitmap> images = new ArrayList<Bitmap>();
+            try {
+                for (int i = 0; i < count; i++) {
+                    Log.d("Selfie Studio", "***** GETTING BITMAP FROM " + urls.get(i));
+                    InputStream in = new java.net.URL(urls.get(i)).openStream();
+                    Bitmap img = BitmapFactory.decodeStream(in);
+                    images.add(img);
+                    Log.d("Selfie Studio", "***** GOT BITMAP FROM " + urls.get(i));
+                    // Escape early if cancel() is called
+                    if (isCancelled()) break;
+                }
+            } catch (Exception e) {
+                Log.e("Error", e.getMessage());
+                e.printStackTrace();
+            }
+            return images;
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<Bitmap> result) {
+            ArrayList<ImageFromFacebook> currentDataSet = new ArrayList<ImageFromFacebook>();
+            for (int k = 0; k < result.size(); k++)
+                currentDataSet.add(new ImageFromFacebook(result.get(k), likeCounts.get(k)));
+
+            // get the signature vector for our original image
+            int[][] signatureVector = calcSignatureVector(newImage);
+
+            double[] distances = new double[currentDataSet.size()];
+
+            for (int i = 0; i < currentDataSet.size(); i++)
+            {
+                int[][] comparisonVector = calcSignatureVector(currentDataSet.get(i).img);
+                double distance = calcVectorDistance(signatureVector, comparisonVector);
+                if (distance < 0)
+                    Log.e("ERROR", "There is an error in the signature vector algorithm");
+                distances[i] = distance;
+            }
+
+            // Sort the vectors
+            for (int p1 = 0; p1 < currentDataSet.size() - 1; p1++)
+            {
+                for (int p2 = p1 + 1; p2 < currentDataSet.size(); p2++)
+                {
+                    if (distances[p1] > distances[p2])
+                    {
+                        double tempDist = distances[p1];
+                        distances[p1] = distances[p2];
+                        distances[p2] = tempDist;
+
+                        ImageFromFacebook temp = currentDataSet.get(p1);
+                        currentDataSet.set(p1, currentDataSet.get(p2));
+                        currentDataSet.set(p2, temp);
+                    }
+                }
+            }
+
+            // Get average number of likes for the entire set of images
+            int sum = 0;
+            int similarImgSum = 0;
+            for (int i = 0; i < currentDataSet.size(); i++)
+            {
+                if (i < NUM_TOP_IMAGES) {
+                    similarImgSum += currentDataSet.get(i).numLikes;
+                    Log.d("SelfieStudio", "Photo Name: " + currentDataSet.get(i).name);
+                }
+                sum += currentDataSet.get(i).numLikes;
+            }
+
+            float similarImagesAvgLikes = (float) similarImgSum / NUM_TOP_IMAGES;
+            float averageLikes = (float) sum / currentDataSet.size();
+
+            // Compare the top three images' average likes to the overall data set's average likes
+            float threshold = 0.3f;
+            if (similarImagesAvgLikes > (averageLikes + averageLikes * threshold))
+                rating = BAE;
+            else if (similarImagesAvgLikes < (averageLikes - averageLikes * threshold))
+                rating = RATCHET;
+            else
+                rating = BASIC;
+
+            if (rating == RATCHET) {
+                // Rating is RATCHET
+                // For now, we will discourage our users to upload a ratchet selfie by graying out the
+                // upload button
+                // cancel_btn.setBackgroundResource(R.drawable.cancel);
+                upload_btn.setImageResource(R.drawable.sharegray);
+                ratingLabel.setImageResource(map.get("ratchet"));
+                ratingLabel.bringToFront();
+                if(mSoundOn)
+                    mSounds.play(mSoundIDMap.get(R.raw.ratchet), 1, 1, 1, 0, 1);
+            } else if (rating == BASIC) {
+                // Rating is BASIC
+                // User is allowed to upload the photo
+                ratingLabel.setImageResource(map.get("basic"));
+                ratingLabel.bringToFront();
+                if(mSoundOn)
+                    mSounds.play(mSoundIDMap.get(R.raw.bell), 1, 1, 1, 0, 1);
+            } else {
+                // Rating is BAE
+                // We will encourage the user to upload the photo
+                ratingLabel.setImageResource(map.get("bae"));
+                ratingLabel.bringToFront();
+                if(mSoundOn)
+                    mSounds.play(mSoundIDMap.get(R.raw.whistle), 1, 1, 1, 0, 1);
+            }
+        }
+    }
 }
+

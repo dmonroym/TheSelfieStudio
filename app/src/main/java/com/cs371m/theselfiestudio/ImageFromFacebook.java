@@ -19,6 +19,13 @@ public class ImageFromFacebook {
         name = n;
     }
 
+    ImageFromFacebook(Bitmap i, int x)
+    {
+        img = i;
+        numLikes = x;
+        name = "no_name";
+    }
+
     public void setImg(Bitmap i)
     {
         this.img = i;

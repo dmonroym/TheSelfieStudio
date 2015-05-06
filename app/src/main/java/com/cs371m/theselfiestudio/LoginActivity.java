@@ -75,6 +75,11 @@ public class LoginActivity extends FragmentActivity {
 
         final Intent intent_main = new Intent(this, MainActivity.class);
 
+        setContentView(R.layout.activity_login);
+
+        LoginButton loginButton = (LoginButton) findViewById(R.id.login_button);
+        loginButton.setReadPermissions("user_photos");
+
         // Add code to print out the key hash
         try {
             PackageInfo info = getPackageManager().getPackageInfo(
@@ -93,16 +98,10 @@ public class LoginActivity extends FragmentActivity {
         //uncomment next line in order to skip the facebook login activity
         //startActivity(intent_main);
 
-        setContentView(R.layout.activity_login);
-
-//        LoginButton loginButton = (LoginButton) this.findViewById(R.id.login_button);
-//        loginButton.setReadPermissions("user_photos");
-
-
 //        LoginManager.getInstance().logInWithReadPermissions(
 //                this,
 //                Arrays.asList("user_photos"));
-        LoginManager.getInstance().registerCallback(callbackManager,
+        loginButton.registerCallback(callbackManager,
                 new FacebookCallback<LoginResult>() {
                     @Override
                     public void onSuccess(LoginResult loginResult) {

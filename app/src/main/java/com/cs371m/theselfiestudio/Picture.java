@@ -22,6 +22,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.app.ProgressDialog;
+import android.app.Activity;
 
 import com.facebook.AccessToken;
 import com.facebook.GraphRequest;
@@ -76,11 +78,16 @@ public class Picture extends ActionBarActivity {
     public Map<String, Integer> map;
     public ArrayList<String> imageUrls;
 
+    private ProgressDialog progress;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mPrefs = getSharedPreferences("ttt_prefs", MODE_PRIVATE);
         setContentView(R.layout.activity_picture);
+
+        progress = new ProgressDialog(this);
+
         Intent messagePassed = getIntent();
         String message = messagePassed.getStringExtra(MainActivity.EXTRA_MESSAGE);
         imageUrls = new ArrayList<String>();
@@ -106,6 +113,24 @@ public class Picture extends ActionBarActivity {
             // start the image capture Intent
             startActivityForResult(camera, CAMERA_REQUEST);
         }
+    }
+
+
+    public void open(boolean show){
+        progress.setMessage("Analyzing picture... ");
+        progress.setIndeterminate(true);
+
+        if(show)
+        {
+            progress.show();
+        }
+        else
+        {
+            progress.cancel();
+            progress.hide();
+            Log.d("Selfie studio", "progress should hide");
+        }
+
     }
 
     /**
@@ -279,6 +304,7 @@ public class Picture extends ActionBarActivity {
                                 JSONArray data = object.getJSONObject("photos").getJSONArray("data");
                                 ArrayList<String> image_urls = new ArrayList<String>();
                                 ArrayList<Integer> like_counts = new ArrayList<Integer>();
+                                open(true);
                                 for (int i = 0; i < data.length(); i++) {
                                     JSONObject objAtIndexI = data.getJSONObject(i);
                                     JSONArray images = objAtIndexI.getJSONArray("images");
@@ -291,8 +317,10 @@ public class Picture extends ActionBarActivity {
                                     image_urls.add(imageUrlStr);
                                     like_counts.add(numLikes);
                                 }
+
                                 new DownloadImageTask(image_urls, like_counts).execute();
                                 Log.d("Selfie Studio", "***** HERE *****");
+
                             } catch (JSONException e) {
                                 Log.d("Selfie Studio", "fail");
                                 e.printStackTrace();
@@ -312,6 +340,7 @@ public class Picture extends ActionBarActivity {
                             upload_btn.setImageResource(R.drawable.sharegray);
                             ratingLabel.setImageResource(map.get("ratchet"));
                             ratingLabel.bringToFront();
+                            open(false);
                             if(mSoundOn)
                                 mSounds.play(mSoundIDMap.get(R.raw.ratchet), 1, 1, 1, 0, 1);
                         } else if (rating == BASIC) {
@@ -319,6 +348,7 @@ public class Picture extends ActionBarActivity {
                             // User is allowed to upload the photo
                             ratingLabel.setImageResource(map.get("basic"));
                             ratingLabel.bringToFront();
+                            open(false);
                             if(mSoundOn)
                                 mSounds.play(mSoundIDMap.get(R.raw.bell), 1, 1, 1, 0, 1);
                         } else {
@@ -326,6 +356,7 @@ public class Picture extends ActionBarActivity {
                             // We will encourage the user to upload the photo
                             ratingLabel.setImageResource(map.get("bae"));
                             ratingLabel.bringToFront();
+                            open(false);
                             if(mSoundOn)
                                 mSounds.play(mSoundIDMap.get(R.raw.whistle), 1, 1, 1, 0, 1);
                         }
@@ -594,6 +625,7 @@ public class Picture extends ActionBarActivity {
                 upload_btn.setImageResource(R.drawable.sharegray);
                 ratingLabel.setImageResource(map.get("ratchet"));
                 ratingLabel.bringToFront();
+                open(false);
                 if(mSoundOn)
                     mSounds.play(mSoundIDMap.get(R.raw.ratchet), 1, 1, 1, 0, 1);
             } else if (rating == BASIC) {
@@ -601,6 +633,7 @@ public class Picture extends ActionBarActivity {
                 // User is allowed to upload the photo
                 ratingLabel.setImageResource(map.get("basic"));
                 ratingLabel.bringToFront();
+                open(false);
                 if(mSoundOn)
                     mSounds.play(mSoundIDMap.get(R.raw.bell), 1, 1, 1, 0, 1);
             } else {
@@ -608,10 +641,12 @@ public class Picture extends ActionBarActivity {
                 // We will encourage the user to upload the photo
                 ratingLabel.setImageResource(map.get("bae"));
                 ratingLabel.bringToFront();
+                open(false);
                 if(mSoundOn)
                     mSounds.play(mSoundIDMap.get(R.raw.whistle), 1, 1, 1, 0, 1);
             }
         }
     }
+
 }
 

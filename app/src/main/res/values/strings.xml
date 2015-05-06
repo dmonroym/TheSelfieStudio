@@ -2,6 +2,7 @@
     <string name="app_name">Selfie Studio</string>
     <string name="hello_world">Hello worlds!</string>
     <string name="action_settings">Log Out</string>
+    <string name="app_settings">Settings</string>
     <string name="facebook_app_id">879715178754310</string>
     <string name="app_id">879715178754310</string>
     <string name="title_activity_main">MainActivity</string>

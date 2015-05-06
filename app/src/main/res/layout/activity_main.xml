@@ -10,7 +10,7 @@
     android:orientation="vertical">
 
     <TextView
-        android:layout_width="match_parent"
+        android:layout_width="356dp"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="Hello User"
@@ -20,23 +20,24 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_gravity="center_horizontal"
-        android:gravity="center" />
+        android:gravity="center"
+        android:layout_weight="0.43" />
 
     <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        android:layout_height="160dp"
         android:id="@+id/imageView3"
         android:src="@drawable/cameraicon"
         android:layout_gravity="center_horizontal"
         android:onClick="takePicture"/>
 
     <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        android:layout_height="160dp"
         android:id="@+id/imageView2"
-        android:layout_gravity="center_horizontal"
         android:src="@drawable/uploadicon"
-        android:onClick="uploadPicture"/>
+        android:onClick="uploadPicture"
+        android:adjustViewBounds="false" />
 
 
 </LinearLayout>

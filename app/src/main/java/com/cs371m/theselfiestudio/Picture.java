@@ -3,10 +3,13 @@ package com.cs371m.theselfiestudio;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.media.AudioManager;
+import android.media.SoundPool;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -60,6 +63,13 @@ public class Picture extends ActionBarActivity {
     public static final int BAE = 3;
     public static final int BASIC = 2;
     public static final int RATCHET = 1;
+
+    private SoundPool mSounds;
+    private HashMap<Integer, Integer> mSoundIDMap;
+    private boolean mSoundOn;
+
+    private SharedPreferences mPrefs;
+
     private Uri fileUri;
     public String picturePath;
     public int rating = 2;
@@ -75,6 +85,7 @@ public class Picture extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mPrefs = getSharedPreferences("ttt_prefs", MODE_PRIVATE);
         setContentView(R.layout.activity_picture);
         Intent messagePassed = getIntent();
         String message = messagePassed.getStringExtra(MainActivity.EXTRA_MESSAGE);
@@ -100,7 +111,6 @@ public class Picture extends ActionBarActivity {
             startActivityForResult(camera, CAMERA_REQUEST);
         }
     }
-
 
     /**
      * Create a file Uri for saving an image or video
@@ -180,10 +190,26 @@ public class Picture extends ActionBarActivity {
 
         } else {
             Log.d("SelfieStudio", "activity result: else");
-            // finish();
+            //finish();
         }
     }
 
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        createSoundPool();
+    }//end onResume override method
+
+    private void createSoundPool() {
+        mSoundOn = mPrefs.getBoolean("sound", true);
+        //mSoundOn = true;
+        int[] soundIds = {R.raw.whistle, R.raw.bell, R.raw.ratchet};
+        mSoundIDMap = new HashMap<>();
+        mSounds = new SoundPool(2, AudioManager.STREAM_MUSIC, 0);
+        for(int id : soundIds)
+            mSoundIDMap.put(id, mSounds.load(this, id, 1));
+    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -206,6 +232,9 @@ public class Picture extends ActionBarActivity {
             startActivity(intent_logIn);
             finish();
             return true;
+        }else if (id == R.id.settings) {
+            startActivityForResult(new Intent(this, Settings.class), 0);
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -226,9 +255,9 @@ public class Picture extends ActionBarActivity {
         map.put("bae", R.drawable.bae);
         map.put("transparent", R.drawable.transparent);
 
-        LoginManager.getInstance().logInWithReadPermissions(
-                this,
-                Arrays.asList("user_photos"));
+//        LoginManager.getInstance().logInWithReadPermissions(
+//                this,
+//                Arrays.asList("user_photos"));
 
         GraphRequest request = GraphRequest.newMeRequest(
                 AccessToken.getCurrentAccessToken(),
@@ -244,8 +273,10 @@ public class Picture extends ActionBarActivity {
                             int[][] signatureVector = calcSignatureVector(newImage);
 
                             ArrayList<ImageFromFacebook> currentDataSet = new ArrayList<ImageFromFacebook>();
+                            //ArrayList<ImageFromFacebook> currentDataSet = tempGetImages();
 
                             try {
+                                Log.d("Selfie Studio", "trying to get photos");
                                 JSONArray data = object.getJSONObject("photos").getJSONArray("data");
                                 Log.d("Selfie Studio", "LENGTH: " + data.length());
                                 for (int i = 0; i < data.length(); i++) {
@@ -260,6 +291,7 @@ public class Picture extends ActionBarActivity {
                                     imageUrls.add(imageUrl);
                                 }
                             } catch (JSONException e) {
+                                Log.d("Selfie Studio", "fail");
                                 e.printStackTrace();
                             }
                         }
@@ -268,6 +300,32 @@ public class Picture extends ActionBarActivity {
                     @Override
                     public void onPostExecute(JSONObject jsonData) {
                         Log.d("Selfie Studio", "POST EXECUTE");
+                        if (rating == RATCHET) {
+                            // Rating is RATCHET
+                            // For now, we will discourage our users to upload a ratchet selfie by graying out the
+                            // upload button
+
+                            // cancel_btn.setBackgroundResource(R.drawable.cancel);
+                            upload_btn.setImageResource(R.drawable.sharegray);
+                            ratingLabel.setImageResource(map.get("ratchet"));
+                            ratingLabel.bringToFront();
+                            if(mSoundOn)
+                                mSounds.play(mSoundIDMap.get(R.raw.ratchet), 1, 1, 1, 0, 1);
+                        } else if (rating == BASIC) {
+                            // Rating is BASIC
+                            // User is allowed to upload the photo
+                            ratingLabel.setImageResource(map.get("basic"));
+                            ratingLabel.bringToFront();
+                            if(mSoundOn)
+                                mSounds.play(mSoundIDMap.get(R.raw.bell), 1, 1, 1, 0, 1);
+                        } else {
+                            // Rating is BAE
+                            // We will encourage the user to upload the photo
+                            ratingLabel.setImageResource(map.get("bae"));
+                            ratingLabel.bringToFront();
+                            if(mSoundOn)
+                                mSounds.play(mSoundIDMap.get(R.raw.whistle), 1, 1, 1, 0, 1);
+                        }
                     }
                 });
         Bundle parameters = new Bundle();
@@ -398,10 +456,28 @@ public class Picture extends ActionBarActivity {
         return Color.rgb((int) accum[0], (int) accum[1], (int) accum[2]);
     }
 
+    //public ArrayList<ImageFromFacebook> tempGetImages()
     public ImageFromFacebook[] tempGetImages()
     {
         Log.d("SelfieStudio", "***** HERE *****");
-        return  new ImageFromFacebook[] {
+        /*ArrayList<ImageFromFacebook> temp = new ArrayList<>();
+        temp.add(new ImageFromFacebook(BitmapFactory.decodeResource(this.getResources(), R.drawable.a), 53, "a"));
+        temp.add(new ImageFromFacebook(BitmapFactory.decodeResource(this.getResources(), R.drawable.b), 78, "b"));
+                temp.add(new ImageFromFacebook(BitmapFactory.decodeResource(this.getResources(), R.drawable.c), 20, "c"));
+                temp.add(new ImageFromFacebook(BitmapFactory.decodeResource(this.getResources(), R.drawable.d), 46, "d"));
+                temp.add(new ImageFromFacebook(BitmapFactory.decodeResource(this.getResources(), R.drawable.e), 66, "e"));
+                temp.add(new ImageFromFacebook(BitmapFactory.decodeResource(this.getResources(), R.drawable.f), 54, "f"));
+                temp.add(new ImageFromFacebook(BitmapFactory.decodeResource(this.getResources(), R.drawable.g), 18, "g"));
+                temp.add(new ImageFromFacebook(BitmapFactory.decodeResource(this.getResources(), R.drawable.h), 57, "h"));
+                temp.add(new ImageFromFacebook(BitmapFactory.decodeResource(this.getResources(), R.drawable.i), 20, "i"));
+                temp.add(new ImageFromFacebook(BitmapFactory.decodeResource(this.getResources(), R.drawable.j), 77, "j"));
+                temp.add( new ImageFromFacebook(BitmapFactory.decodeResource(this.getResources(), R.drawable.k), 69, "k"));
+                temp.add(new ImageFromFacebook(BitmapFactory.decodeResource(this.getResources(), R.drawable.l), 41, "l"));
+                temp.add(new ImageFromFacebook(BitmapFactory.decodeResource(this.getResources(), R.drawable.m), 7, "m"));
+                temp.add(new ImageFromFacebook(BitmapFactory.decodeResource(this.getResources(), R.drawable.n), 30, "n"));
+                temp.add(new ImageFromFacebook(BitmapFactory.decodeResource(this.getResources(), R.drawable.o), 27, "o"));
+        return temp;*/
+        return  new ImageFromFacebook[]{
                 new ImageFromFacebook(BitmapFactory.decodeResource(this.getResources(), R.drawable.a), 53, "a"),
                 new ImageFromFacebook(BitmapFactory.decodeResource(this.getResources(), R.drawable.b), 78, "b"),
                 new ImageFromFacebook(BitmapFactory.decodeResource(this.getResources(), R.drawable.c), 20, "c"),

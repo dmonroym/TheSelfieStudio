@@ -90,6 +90,9 @@ public class MainActivity extends ActionBarActivity {
             startActivity(intent_logIn);
             finish();
             return true;
+        } else if (id == R.id.settings) {
+            startActivityForResult(new Intent(this, Settings.class), 0);
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }

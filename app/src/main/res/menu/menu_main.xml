@@ -4,4 +4,7 @@
     tools:context="com.cs371m.theselfiestudio.MainActivity">
     <item android:id="@+id/action_logOut" android:title="@string/action_settings"
         android:orderInCategory="100" app:showAsAction="never" />
+
+    <item android:id="@+id/settings" android:title="@string/app_settings"
+        android:orderInCategory="100" app:showAsAction="never" />
 </menu>
